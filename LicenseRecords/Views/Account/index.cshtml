@@ -16,7 +16,10 @@
             <tr>
                 <td>@account.AccountId</td>
                 <td>@account.AccountName</td>
-                <td>@account.AccountStatus</td>
+                <td style="color: @(account.AccountStatus == "Active" ? "green" : account.AccountStatus == "Inactive" ? "red" : "transparent");">
+                    <strong>  @account.AccountStatus </strong>
+                </td>
+
                 <td>
                     
                   
@@ -153,8 +156,13 @@
                     <input type="hidden" id="addLicenseAccount" />
                     <div class="form-group">
                         <label for="licenseStatus">License Status</label>
-                        <input type="text" class="form-control" id="licenseStatus" name="licenseStatus" required />
+                        <select class="form-control" id="licenseStatus" name="licenseStatus" required>
+                            <option value="" disabled selected>Select Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
                     </div>
+
 
                     <div class="form-group">
                         <label for="licenseFromDate">License From Date</label>
