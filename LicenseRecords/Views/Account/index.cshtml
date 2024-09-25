@@ -1,0 +1,80 @@
+@model List<LicenseRecords.Models.Accounts>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<h4 class="margin-left">Licensee Account Records</h4>
+<div class="container margin-top govuk-phase-banner__content">
+    <div class="row">
+        @foreach (var account in Model)
+        {
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">@account.AccountName</h5>
+                        <p class="card-text">Status: @account.AccountStatus</p>
+                        <button type="button" class="black-button" data-toggle="modal" data-target="#detailsModal-@account.AccountId">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+           
+            <div class="modal fade" id="detailsModal-@account.AccountId" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">@account.AccountName - Licences</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @if (account.ProductLicence != null && account.ProductLicence.Count > 0)
+                            {
+                                <ul class="list-group">
+                                    @foreach (var licence in account.ProductLicence)
+                                    {
+                                        <li class="list-group-item mb-3 p-4 shadow-sm border">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h5 class="mb-3">Licence Information</h5>
+                                                    <p><strong>Licence ID:</strong> @licence.LicenceId</p>
+                                                    <p>
+                                                        <strong>Licence Status:</strong>
+                                                        <span class="badge bg-success">@licence.LicenceStatus</span>
+                                                    </p>
+                                                    <p><strong>Licence From:</strong> @licence.LicenceFromDate.ToString("yyyy-MM-dd")</p>
+                                                    <p>
+                                                        <strong>Licence To:</strong>
+                                                        @(licence.LicenceToDate.HasValue ? licence.LicenceToDate.Value.ToString("yyyy-MM-dd") : "N/A")
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h5 class="mb-3">Product Information</h5>
+                                                    <p><strong>Product ID:</strong> @licence.Product.ProductId</p>
+                                                    <p><strong>Product Name:</strong> @licence.Product.ProductName</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+
+                            }
+                            else
+                            {
+                                <p>No Licences available for this account.</p>
+                            }
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
