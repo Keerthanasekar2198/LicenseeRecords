@@ -20,7 +20,7 @@
                 <td>
                     
                   
-                        <button class="black-button" onclick="viewLicenseDetails(@account.AccountId)">
+                        <button class="grey-button" onclick="viewLicenseDetails(@account.AccountId)">
                             View License Details
                         </button>
                     
@@ -188,18 +188,19 @@
                 if (data.productLicence && data.productLicence.length > 0) {
                     data.productLicence.forEach(function (license) {
                         var licenseDetailsHtml = `
-                                <div class="license-card">
-                                    <h6>License ID: ${license.licenceId}</h6>
-                                    <p><strong>Status:</strong> ${license.licenceStatus}</p>
-                                    <p><strong>From:</strong> ${license.licenceFromDate.split('T')[0]}</p>
-                                    <p><strong>To:</strong> ${license.licenceToDate ? license.licenceToDate.split('T')[0] : 'N/A'}</p>
-                                    <p><strong>Product Name:</strong> ${license.product ? license.product.productName : 'N/A'}</p>
-                                    <button class="grey-button" onclick="deleteLicense(${license.licenceId})">Delete License</button>
-                                </div>
-                            `;
+                    <div class="license-card" id=${license.licenceId}>
+                            <p><strong>License ID:</strong>  ${license.licenceId}</p>
+                    <p><strong>Status:</strong> ${license.licenceStatus}</p>
+                    <p><strong>From:</strong> ${license.licenceFromDate.split('T')[0]}</p>
+                    <p><strong>To:</strong> ${license.licenceToDate ? license.licenceToDate.split('T')[0] : 'N/A'}</p>
+                    <p><strong>Product Name:</strong> ${license.product ? license.product.productName : 'N/A'}</p>
+                    <button class="grey-button" onclick="deleteLicense(${license.licenceId})">Delete License</button>
+                </div>
+            `;
                         $('#licenseDetailsBody').append(licenseDetailsHtml);
                     });
-                } else {
+                }
+                else {
                     $('#licenseDetailsBody').append('<p>No license details available for this account.</p>');
                 }
 
@@ -209,24 +210,6 @@
                 alert('Failed to fetch license details.');
             }
         });
-    }
-
-    function deleteLicense(licenseId) {
-        if (confirm('Are you sure you want to delete this license?')) {
-           
-            $.ajax({
-                url: `/api/LicensesApi/${licenseId}`,
-                type: 'DELETE',
-                success: function () {
-                    alert('License deleted successfully.');
-                    $('#licenseModal').modal('hide'); 
-                    viewLicenseDetails(currentAccountId);
-                },
-                error: function () {
-                    alert('Failed to delete license.');
-                }
-            });
-        }
     }
 
     function saveAccount() {
@@ -313,6 +296,25 @@
             }
         });
     }
+
+   function deleteLicense(licenceId) {
+    const url = `/api/AccountsApi/DeleteLicense/${licenceId}`;
+
+    $.ajax({
+        url: url,
+        type: 'DELETE',
+        success: function () {
+            console.log(`License ID ${licenceId} deleted successfully.`);
+            alert('License deleted successfully!');
+            $(`#${licenceId}`).remove();
+            location.reload();
+        },
+        error: function (error) {
+            console.error(`Error deleting license ID ${licenceId}:`, error);
+            alert('Error deleting license. Please try again.');
+        }
+    });
+}
 
 
 

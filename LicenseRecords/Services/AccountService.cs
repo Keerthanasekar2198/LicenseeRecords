@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text.Json;
 using Newtonsoft.Json.Linq;
 using static LicenseRecords.Models.Accounts;
+using System.Xml;
+using Newtonsoft.Json;
 
 namespace LicenseRecords.Services
 {
@@ -33,7 +35,7 @@ namespace LicenseRecords.Services
             }
 
             var jsonData = File.ReadAllText(jsonFilePath);
-            return JsonSerializer.Deserialize<List<T>>(jsonData) ?? new List<T>();
+            return System.Text.Json.JsonSerializer.Deserialize<List<T>>(jsonData) ?? new List<T>();
         }
 
         private List<Accounts> LoadAccountsFromJson()
@@ -98,7 +100,7 @@ namespace LicenseRecords.Services
 
         private void SaveAccountsToJson()
         {
-            var jsonData = JsonSerializer.Serialize(_accounts, new JsonSerializerOptions { WriteIndented = true });
+            var jsonData = System.Text.Json.JsonSerializer.Serialize(_accounts, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(_accountsJsonPath, jsonData);
         }
 
@@ -114,6 +116,38 @@ namespace LicenseRecords.Services
                 .ToList();
 
             return products;
+        }
+
+
+        // Method to delete a license from an account
+        public bool DeleteLicense(int licenceId)
+        {
+           
+            var json = File.ReadAllText(_accountsJsonPath);
+            var accounts = JsonConvert.DeserializeObject<List<Accounts>>(json);
+
+            if (accounts == null)
+                return false;
+
+            
+            var accountWithLicense = accounts.FirstOrDefault(a => a.ProductLicence != null && a.ProductLicence.Any(l => l.LicenceId == licenceId));
+
+            if (accountWithLicense == null)
+                return false;
+
+            
+            var licenseToRemove = accountWithLicense.ProductLicence.FirstOrDefault(l => l.LicenceId == licenceId);
+            if (licenseToRemove != null)
+            {
+                accountWithLicense.ProductLicence.Remove(licenseToRemove);
+
+                
+                File.WriteAllText(_accountsJsonPath, JsonConvert.SerializeObject(accounts, Newtonsoft.Json.Formatting.Indented));
+
+                return true; 
+            }
+
+            return false; 
         }
     }
 }

@@ -112,4 +112,19 @@ public class AccountsApiController : ControllerBase
         var productNames = await _accountsService.GetProductNamesAsync();
         return Ok(productNames);
     }
+
+    // DELETE: api/AccountsApi/DeleteLicense/{licenceId}
+    [HttpDelete("DeleteLicense/{licenceId}")]
+    public ActionResult DeleteLicense(int licenceId)
+    {
+        var licenseDeleted = _accountsService.DeleteLicense(licenceId);
+
+        if (!licenseDeleted)
+        {
+            return NotFound(); 
+        }
+
+        return NoContent();
+    }
+
 }
