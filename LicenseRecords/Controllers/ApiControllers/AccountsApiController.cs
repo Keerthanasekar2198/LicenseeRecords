@@ -58,27 +58,30 @@ public class AccountsApiController : ControllerBase
 
     // PUT: api/AccountsApi/UpdateAccount/{id}
     [HttpPut("{id}")]
-    public ActionResult<Accounts> UpdateAccount(int id, [FromBody] Accounts account)
+    public ActionResult UpdateAccount(int id, [FromBody] Accounts account)
     {
-        if (id != account.AccountId) 
+      
+        if (account == null)
         {
-            return BadRequest("Account ID mismatch.");
+            return BadRequest("Account data cannot be null.");
         }
 
+        
         var existingAccount = _accountsService.GetAccountById(id);
         if (existingAccount == null)
         {
-            return NotFound(); 
+            return NotFound();
         }
 
-       
+        
         existingAccount.AccountName = account.AccountName;
         existingAccount.AccountStatus = account.AccountStatus;
 
         try
         {
-            _accountsService.UpdateAccount(existingAccount); 
-            return NoContent();
+           
+            _accountsService.UpdateAccount(existingAccount);
+            return NoContent(); 
         }
         catch (Exception ex)
         {
@@ -86,7 +89,6 @@ public class AccountsApiController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
-
 
 
 
@@ -102,5 +104,12 @@ public class AccountsApiController : ControllerBase
 
         _accountsService.DeleteAccount(id);
         return NoContent();
+    }
+
+    [HttpGet("products")]
+    public async Task<ActionResult<IEnumerable<string>>> GetProducts()
+    {
+        var productNames = await _accountsService.GetProductNamesAsync();
+        return Ok(productNames);
     }
 }

@@ -4,6 +4,8 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using Newtonsoft.Json.Linq;
+using static LicenseRecords.Models.Accounts;
 
 namespace LicenseRecords.Services
 {
@@ -43,9 +45,12 @@ namespace LicenseRecords.Services
             // Map products to their respective accounts
             foreach (var account in accounts)
             {
-                foreach (var licence in account.ProductLicence)
+                if (account.ProductLicence != null)
                 {
-                    licence.Product = products.FirstOrDefault(p => p.ProductId == licence.Product?.ProductId);
+                    foreach (var licence in account.ProductLicence)
+                    {
+                        licence.Product = products.FirstOrDefault(p => p.ProductId == licence.Product?.ProductId);
+                    }
                 }
             }
             return accounts;
@@ -64,6 +69,7 @@ namespace LicenseRecords.Services
         public void CreateAccount(Accounts account)
         {
             account.AccountId = _accounts.Count > 0 ? _accounts.Max(a => a.AccountId) + 1 : 1;
+            account.ProductLicence = null;
             _accounts.Add(account);
             SaveAccountsToJson(); // Save the new account to JSON
         }
@@ -94,6 +100,20 @@ namespace LicenseRecords.Services
         {
             var jsonData = JsonSerializer.Serialize(_accounts, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(_accountsJsonPath, jsonData);
+        }
+
+        public async Task<IEnumerable<Product>> GetProductNamesAsync()
+        {
+            var json = await File.ReadAllTextAsync(_productsJsonPath);
+            var products = JArray.Parse(json)
+                .Select(p => new Product
+                {
+                    ProductId = (int)p["ProductId"],
+                    ProductName = p["ProductName"].ToString()
+                })
+                .ToList();
+
+            return products;
         }
     }
 }
