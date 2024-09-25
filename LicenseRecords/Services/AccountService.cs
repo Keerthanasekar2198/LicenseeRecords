@@ -118,6 +118,12 @@ namespace LicenseRecords.Services
             return products;
         }
 
+        public List<Product> GetAllProducts()
+        {
+            var json = System.IO.File.ReadAllText(_productsJsonPath);
+            return JsonConvert.DeserializeObject<List<Product>>(json);
+        }
+
 
         // Method to delete a license from an account
         public bool DeleteLicense(int licenceId)

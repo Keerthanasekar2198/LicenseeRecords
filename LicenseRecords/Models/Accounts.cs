@@ -10,10 +10,12 @@
        
         public class ProductLicenseDetail
         {
-            public int LicenceId { get; set; }
+            public int? LicenceId { get; set; }
             public string? LicenceStatus { get; set; }
-            public DateTime LicenceFromDate { get; set; }
-            public DateTime? LicenceToDate { get; set; }  
+            public DateTime? LicenceFromDate { get; set; }
+            public DateTime? LicenceToDate { get; set; }
+
+            public int? ProductId { get; set; }
             public Product? Product { get; set; }
         }
 

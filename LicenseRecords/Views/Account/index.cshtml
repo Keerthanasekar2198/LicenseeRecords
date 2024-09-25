@@ -1,6 +1,6 @@
 @model IEnumerable<LicenseRecords.Models.Accounts>
 
-
+<h4 class="margin-bottom gov-uk-fonts">Licensee Account Records</h4>
 <table class="table">
     <thead>
         <tr>
@@ -56,7 +56,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="grey-button" data-dismiss="modal">Close</button>
-                <button type="button" class="black-button" id="editLicenseButton">Add License</button>
+                <button type="button" class="black-button" onclick="addLicensesModal()" id="editLicenseButton">Add License</button>
             </div>
         </div>
     </div>
@@ -139,6 +139,48 @@
 </div>
 
 
+<div class="modal fade" id="addLicenseModal" tabindex="-1" role="dialog" aria-labelledby="addLicenseModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addLicenseModalLabel">Add License</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addLicenseForm">
+                    <input type="hidden" id="addLicenseAccount" />
+                    <div class="form-group">
+                        <label for="licenseStatus">License Status</label>
+                        <input type="text" class="form-control" id="licenseStatus" name="licenseStatus" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="licenseFromDate">License From Date</label>
+                        <input type="date" class="form-control" id="licenseFromDate" name="licenseFromDate" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="licenseToDate">License To Date</label>
+                        <input type="date" class="form-control" id="licenseToDate" name="licenseToDate" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productName">Product Name</label>
+                        <select class="form-control" id="productName" name="productName" required>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="grey-button" data-dismiss="modal">Close</button>
+                <button type="button" class="black-button" onclick="addLicense()">Add License</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <style>
     .btn-black {
@@ -175,8 +217,10 @@
         $('#accountModal').modal('show');
     }
 
-    
-   
+    function addLicensesModal() { 
+        $('#licenseModal').modal('hide');
+        $('#addLicenseModal').modal('show');
+    }
 
     function viewLicenseDetails(accountId) {
         $('#licenseDetailsBody').empty();
@@ -189,7 +233,7 @@
                     data.productLicence.forEach(function (license) {
                         var licenseDetailsHtml = `
                     <div class="license-card" id=${license.licenceId}>
-                            <p><strong>License ID:</strong>  ${license.licenceId}</p>
+                    <p><strong>License ID:</strong>  ${license.licenceId}</p>
                     <p><strong>Status:</strong> ${license.licenceStatus}</p>
                     <p><strong>From:</strong> ${license.licenceFromDate.split('T')[0]}</p>
                     <p><strong>To:</strong> ${license.licenceToDate ? license.licenceToDate.split('T')[0] : 'N/A'}</p>
@@ -204,7 +248,11 @@
                     $('#licenseDetailsBody').append('<p>No license details available for this account.</p>');
                 }
 
+                $('#addLicenseAccount').val(accountId);
+                console.log($('AccountID' + '#addLicenseAccount').val());
                 $('#licenseModal').modal('show');
+               
+                
             },
             error: function () {
                 alert('Failed to fetch license details.');
@@ -288,7 +336,7 @@
             success: function (response) {
                 alert('Account updated successfully!');
                 $('#editModal').modal('hide');
-                location.reload(); // Reload the page to see the changes
+                location.reload();
             },
             error: function (error) {
                 console.error('Error updating account:', error);
@@ -297,7 +345,7 @@
         });
     }
 
-   function deleteLicense(licenceId) {
+    function deleteLicense(licenceId) {
     const url = `/api/AccountsApi/DeleteLicense/${licenceId}`;
 
     $.ajax({
@@ -307,7 +355,11 @@
             console.log(`License ID ${licenceId} deleted successfully.`);
             alert('License deleted successfully!');
             $(`#${licenceId}`).remove();
-            location.reload();
+
+                if ($('.license-card').length === 0) {
+                    $('#licenseDetailsBody').html('<p>No license details available for this account.</p>');
+                }
+
         },
         error: function (error) {
             console.error(`Error deleting license ID ${licenceId}:`, error);
@@ -315,6 +367,70 @@
         }
     });
 }
+
+    function loadProductsDropdown() {
+        $.ajax({
+            url: '/api/AccountsApi/products',
+            type: 'GET',
+            dataType: 'json',
+            success: function (products) {
+               
+                $('#productName').empty();
+
+               
+                $('#productName').append('<option value="" disabled selected>Select a product</option>');
+
+                
+                products.forEach(function (product) {
+                    $('#productName').append(
+                        `<option value="${product.productId}">${product.productName}</option>`
+                    );
+                });
+            },
+            error: function (error) {
+                console.error('Error loading products:', error);
+                alert('Error loading products. Please try again.');
+            }
+        });
+    }
+
+    function addLicense() {
+       
+        const licenseData = {
+            licenceStatus: $('#licenseStatus').val(),
+            licenceFromDate: $('#licenseFromDate').val(),
+            licenceToDate: $('#licenseToDate').val(),
+            productId: $('#productName').val()
+        };
+
+        const accountId = $('#addLicenseAccount').val();
+
+        console.log('AccountId' + accountId);
+        
+        const url = `/api/AccountsApi/AddLicense/${accountId}`;
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(licenseData),
+            success: function (response) {
+                alert('License added successfully!');
+                $('#addLicenseModal').modal('hide'); 
+                location.reload();
+            },
+            error: function (error) {
+                console.error('Error adding license:', error);
+                alert('Error adding license. Please try again.');
+            }
+        });
+    }
+
+   
+    $('#addLicenseModal').on('shown.bs.modal', function () {
+        loadProductsDropdown();
+    });
+
 
 
 

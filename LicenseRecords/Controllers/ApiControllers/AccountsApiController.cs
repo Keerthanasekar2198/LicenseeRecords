@@ -113,6 +113,7 @@ public class AccountsApiController : ControllerBase
         return Ok(productNames);
     }
 
+
     // DELETE: api/AccountsApi/DeleteLicense/{licenceId}
     [HttpDelete("DeleteLicense/{licenceId}")]
     public ActionResult DeleteLicense(int licenceId)
@@ -126,5 +127,49 @@ public class AccountsApiController : ControllerBase
 
         return NoContent();
     }
+
+
+    [HttpPost("AddLicense/{accountId}")]
+    public IActionResult AddLicense(int accountId, [FromBody] Accounts.ProductLicenseDetail newLicense)
+    {
+        var account = _accountsService.GetAccountById(accountId);
+
+        if (account == null)
+        {
+            return NotFound();
+        }
+
+
+        var products = _accountsService.GetAllProducts();
+
+
+        var product = products.FirstOrDefault(p => p.ProductId == newLicense.ProductId);
+
+
+        if (product == null)
+        {
+            return BadRequest("Invalid product ID.");
+        }
+
+       
+        newLicense.Product = product;
+
+        if (account.ProductLicence == null)
+        {
+            account.ProductLicence = new List<Accounts.ProductLicenseDetail>();
+        }
+
+       
+        newLicense.LicenceId = account.ProductLicence.Count > 0 ? account.ProductLicence.Max(l => l.LicenceId) + 1 : 1;
+
+        
+        account.ProductLicence.Add(newLicense);
+
+        
+        _accountsService.UpdateAccount(account);
+
+        return Ok(newLicense);
+    }
+
 
 }

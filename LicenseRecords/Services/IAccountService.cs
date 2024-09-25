@@ -13,6 +13,7 @@ namespace LicenseRecords.Services
         void DeleteAccount(int id);
         public Task<IEnumerable<Product>> GetProductNamesAsync();
         bool DeleteLicense(int licenceId);
+        public List<Product> GetAllProducts();
     }
 
 }
