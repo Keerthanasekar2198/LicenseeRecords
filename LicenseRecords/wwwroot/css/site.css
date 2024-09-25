@@ -31,6 +31,12 @@ body {
     border-color: black;
 }
 
+.grey-button {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
 .margin-left{
     margin-left: 15px;
 }

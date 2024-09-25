@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
     <title>@ViewData["Title"] - Licensee Records</title>
-       
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="icon" type="image/png" sizes="32x32" href="~/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="~/images/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="~/images/favicon-16x16.png">
@@ -14,7 +14,8 @@
     <link rel="stylesheet" type="text/css" href="~/css/govuk-frontend-5.6.0.min.css" />
     <link rel="stylesheet" type="text/css" href="~/css/licensee.records.css" />
     <link rel="stylesheet" type="text/css" href="~/css/site.css" />
-   
+  
+
 </head>
 
 <body class="govuk-template__body">
@@ -30,12 +31,12 @@
         <div class="govuk-header__container govuk-width-container">
             <div class="govuk-header__logo">
                 <a href="/" class="govuk-header__link govuk-header__link--homepage govuk-!-static-padding-top-2">
-                    
+
                     <img src="~/images/logo.png"
-                        alt="Gambling Commission" 
-                        width="200px"
-                        class="govuk-header__logotype govuk-image-fluid"
-                        aria-label="Gambling Commission" />                    
+                         alt="Gambling Commission"
+                         width="200px"
+                         class="govuk-header__logotype govuk-image-fluid"
+                         aria-label="Gambling Commission" />
                 </a>
             </div>
 
@@ -43,11 +44,10 @@
             <div class="govuk-header__content">
                 <a href="#" class="govuk-header__link govuk-header__service-name">
                     Licensee Records
-                </a>                
+                </a>
             </div>
 
         </div>
-
     </header>
 
     <!-- main -->
@@ -63,13 +63,11 @@
                     This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
                 </span>
             </p>
-        </div>        
+        </div>
 
-        <!-- main cntent -->
+        <!-- main content -->
         <main class="govuk-main-wrapper" id="main-content">
-
             @RenderBody()
-
         </main>
     </div>
 
@@ -94,10 +92,13 @@
                            href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
                            rel="license">Open Government Licence v3.0</a>, except where otherwise stated
                     </span>
-                </div>                
+                </div>
             </div>
         </div>
     </footer>
+
+    <!-- Render the Scripts section -->
+    @RenderSection("Scripts", required: false)
 
     <script type="module" src="~/js/govuk-frontend-5.6.0.min.js"></script>
     <script type="module">

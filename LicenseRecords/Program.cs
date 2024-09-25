@@ -1,4 +1,8 @@
+using LicenseRecords.Services;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
